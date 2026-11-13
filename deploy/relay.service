@@ -1,0 +1,30 @@
+[Unit]
+Description=turnlite SSRF-hardened STUN/TURN relay
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=turnlite
+Group=turnlite
+ExecStart=/usr/local/bin/turnlite \
+  -public-ip 203.0.113.10 \
+  -listen-ip 0.0.0.0 \
+  -secret-file /etc/turnlite/turn-secret \
+  -cert /etc/turnlite/tls/fullchain.pem \
+  -key /etc/turnlite/tls/privkey.pem \
+  -realm turn.example.com
+Restart=always
+RestartSec=3
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/etc/turnlite
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
